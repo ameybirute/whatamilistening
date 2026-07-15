@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 
-app.use(express.static(path.join(__dirname, "../website")));
+app.use(express.static(path.join(__dirname, "public")));
 
 let currentMusic = {
     song: null,
