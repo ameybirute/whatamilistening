@@ -10,12 +10,60 @@ object MusicApi {
     private val client = OkHttpClient()
 
     private const val URL =
-        "http://192.168.1.11:3000/api/update"
+        "https://whatamilistening.com/api/update"
 
+    private const val STATUS_URL =
+        "https://whatamilistening.com/api/status"
+
+    fun fetchStatus() {
+
+        val request = Request.Builder()
+            .url(STATUS_URL)
+            .get()
+            .build()
+
+        client.newCall(request).enqueue(
+            object : Callback {
+
+                override fun onFailure(
+                    call: Call,
+                    e: java.io.IOException
+                ) {
+                    e.printStackTrace()
+                }
+
+                override fun onResponse(
+                    call: Call,
+                    response: Response
+                ) {
+                    val body = response.body?.string() ?: return
+
+                    val json = org.json.JSONObject(body)
+
+                    val song = json.optString("song")
+                    val artist = json.optString("artist")
+                    val app = json.optString("app")
+                    val artwork =
+                        json.optString("artwork")
+                            .takeIf { it.isNotBlank() && it != "null" }
+
+                    MusicState.update(
+                        song = song,
+                        artist = artist,
+                        app = app,
+                        artwork = artwork
+                    )
+
+                    response.close()
+                }
+            }
+        )
+    }
     fun send(
         song: String?,
         artist: String?,
-        app: String?
+        app: String?,
+        playing: Boolean
     ) {
 
         val json = """
@@ -23,7 +71,7 @@ object MusicApi {
             "song":"${song ?: ""}",
             "artist":"${artist ?: ""}",
             "app":"${app ?: ""}",
-            "playing":true
+            "playing":$playing
         }
         """.trimIndent()
 
