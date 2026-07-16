@@ -1,7 +1,6 @@
 const cors = require("cors");
 const express = require("express");
 const axios = require("axios");
-const path = require("path");
 
 const app = express();
 app.use(cors({
@@ -11,9 +10,6 @@ const PORT = process.env.PORT || 3000;
 
 
 app.use(express.json());
-
-
-app.use(express.static(path.join(__dirname, "public")));
 
 let currentMusic = {
     song: null,
