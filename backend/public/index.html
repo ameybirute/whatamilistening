@@ -303,7 +303,9 @@ async function fetchMusic(){
 
 }
 
-fetchMusic();
+fetch("https://api.whatamilistening.com/api/status", {
+    cache: "no-store"
+})
 
 setInterval(fetchMusic,2000);
 
