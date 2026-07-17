@@ -197,6 +197,75 @@ const musicIcon =
 
 let latestData = null;
 
+function updatePage() {
+
+    if (!latestData) {
+        return;
+    }
+
+    if (latestData.playing === true) {
+
+        songElement.textContent =
+            fixCapitalization(
+                latestData.song || "Nothing playing"
+            );
+
+        artistElement.textContent =
+            fixCapitalization(
+                latestData.artist || ""
+            );
+
+        appElement.textContent =
+            latestData.app || "";
+
+        statusElement.textContent =
+            "🟢 Listening now";
+
+        statusElement.style.color =
+            "#4ade80";
+
+        if (latestData.artwork) {
+
+            coverImage.src =
+                latestData.artwork;
+
+            coverImage.style.display =
+                "block";
+
+            musicIcon.style.display =
+                "none";
+
+        } else {
+
+            coverImage.style.display =
+                "none";
+
+            musicIcon.style.display =
+                "block";
+        }
+
+    } else {
+
+        songElement.textContent = "";
+        artistElement.textContent = "";
+        appElement.textContent = "";
+
+        statusElement.textContent =
+            getLastSeen(
+                latestData.lastUpdated
+            );
+
+        statusElement.style.color =
+            "#999";
+
+        coverImage.style.display =
+            "none";
+
+        musicIcon.style.display =
+            "block";
+    }
+}
+
 
 function getLastSeen(timestamp) {
 
@@ -246,40 +315,57 @@ function getLastSeen(timestamp) {
 
 
 function fixCapitalization(text) {
-
     if (!text) return "";
 
     const exceptions = new Set([
-        "DJ",
         "BTS",
         "BLACKPINK",
-        "AC",
-        "DC",
+        "ABBA",
+        "MGMT",
+        "M83",
+        "U2",
+        "UB40",
+        "INXS",
+        "DJ",
         "EDM",
-        "R&B",
         "OST",
-        "UK",
-        "USA",
-        "XXXTENTACION",
-        "KR$NA",
+        "NF",
         "MC",
+        "PCRC"
     ]);
 
-    return text.replace(
-        /\b[A-ZÀ-ÖØ-Ý]{2,}\b/g,
-        function(word) {
+    return text
+        .split(" ")
+        .map(word => {
 
-            if (exceptions.has(word)) {
+            const cleanWord =
+                word.replace(/[^A-Za-z0-9&$/.+-]/g, "");
+
+            if (
+                exceptions.has(cleanWord.toUpperCase())
+            ) {
                 return word;
             }
 
-            // Convert ALL-CAPS words
-            return (
-                word.charAt(0).toUpperCase() +
-                word.slice(1).toLowerCase()
-            );
-        }
-    );
+            if (
+                cleanWord.length > 1 &&
+                cleanWord === cleanWord.toUpperCase() &&
+                /[A-Z]/.test(cleanWord)
+            ) {
+
+                const formatted =
+                    cleanWord.charAt(0).toUpperCase() +
+                    cleanWord.slice(1).toLowerCase();
+
+                return word.replace(
+                    cleanWord,
+                    formatted
+                );
+            }
+
+            return word;
+        })
+        .join(" ");
 }
 
 
