@@ -176,21 +176,26 @@ class MusicNotificationListener : NotificationListenerService() {
         }
 
 
-        val appName = try {
+        val appName = when (sbn.packageName) {
 
-            val appInfo =
-                packageManager.getApplicationInfo(
-                    sbn.packageName,
-                    0
-                )
+            "app.revanced.android.youtube" -> "YouTube"
 
-            packageManager
-                .getApplicationLabel(appInfo)
-                .toString()
+            else -> {
+                try {
+                    val appInfo =
+                        packageManager.getApplicationInfo(
+                            sbn.packageName,
+                            0
+                        )
 
-        } catch (e: Exception) {
+                    packageManager
+                        .getApplicationLabel(appInfo)
+                        .toString()
 
-            sbn.packageName
+                } catch (e: Exception) {
+                    sbn.packageName
+                }
+            }
         }
 
 
