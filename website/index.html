@@ -109,31 +109,31 @@ main{
 
 @media(max-width:600px){
 
-header{
-    font-size:21px;
-    line-height:1.25;
-}
+    header{
+        font-size:21px;
+        line-height:1.25;
+    }
 
-.mobile-break{
-    display:block;
-}
+    .mobile-break{
+        display:block;
+    }
 
-.cover{
-    width:140px;
-    height:140px;
-}
+    .cover{
+        width:140px;
+        height:140px;
+    }
 
-.cover span{
-    font-size:55px;
-}
+    .cover span{
+        font-size:55px;
+    }
 
-.song{
-    font-size:22px;
-}
+    .song{
+        font-size:22px;
+    }
 
-.artist{
-    font-size:16px;
-}
+    .artist{
+        font-size:16px;
+    }
 
 }
 
@@ -153,26 +153,22 @@ header{
 
 <div class="card">
 
-<div class="cover">
-    <img id="coverImage">
-    <span id="musicIcon">🎵</span>
-</div>
+    <div class="cover">
+        <img id="coverImage" alt="Album artwork">
+        <span id="musicIcon">🎵</span>
+    </div>
 
-<div class="song" id="song">
-Nothing playing
-</div>
+    <div class="song" id="song">
+        Nothing playing
+    </div>
 
-<div class="artist" id="artist">
+    <div class="artist" id="artist"></div>
 
-</div>
+    <div class="app" id="app"></div>
 
-<div class="app" id="app">
-
-</div>
-
-<div class="status" id="status">
-Loading...
-</div>
+    <div class="status" id="status">
+        Loading...
+    </div>
 
 </div>
 
@@ -180,129 +176,204 @@ Loading...
 
 <script>
 
-const songElement=document.getElementById("song");
-const artistElement=document.getElementById("artist");
-const appElement=document.getElementById("app");
-const statusElement=document.getElementById("status");
+const songElement =
+    document.getElementById("song");
 
-const coverImage=document.getElementById("coverImage");
-const musicIcon=document.getElementById("musicIcon");
+const artistElement =
+    document.getElementById("artist");
 
-let latestData=null;
+const appElement =
+    document.getElementById("app");
 
-const ACTIVE_TIMEOUT=2*60*1000;
+const statusElement =
+    document.getElementById("status");
 
-function getLastSeen(timestamp){
+const coverImage =
+    document.getElementById("coverImage");
 
-    if(!timestamp)
+const musicIcon =
+    document.getElementById("musicIcon");
+
+
+let latestData = null;
+
+
+function getLastSeen(timestamp) {
+
+    if (!timestamp) {
         return "Offline";
+    }
 
-    const diff=Date.now()-timestamp;
+    const diff =
+        Date.now() - Number(timestamp);
 
-    const minutes=Math.floor(diff/60000);
+    const minutes =
+        Math.floor(diff / 60000);
 
-    const hours=Math.floor(minutes/60);
+    const hours =
+        Math.floor(minutes / 60);
 
-    const days=Math.floor(hours/24);
+    const days =
+        Math.floor(hours / 24);
 
-    if(minutes<1)
+
+    if (minutes < 1) {
         return "Last seen less than a minute ago";
+    }
 
-    if(minutes===1)
+    if (minutes === 1) {
         return "Last seen 1 minute ago";
+    }
 
-    if(minutes<60)
+    if (minutes < 60) {
         return `Last seen ${minutes} minutes ago`;
+    }
 
-    if(hours===1)
+    if (hours === 1) {
         return "Last seen 1 hour ago";
+    }
 
-    if(hours<24)
+    if (hours < 24) {
         return `Last seen ${hours} hours ago`;
+    }
 
-    if(days===1)
+    if (days === 1) {
         return "Last seen yesterday";
+    }
 
     return `Last seen ${days} days ago`;
-
 }
 
+
 function updatePage() {
-    if (!latestData) return;
+
+    if (!latestData) {
+        return;
+    }
+
 
     songElement.textContent =
         latestData.song || "Nothing playing";
 
+
     artistElement.textContent =
         latestData.artist || "";
+
 
     appElement.textContent =
         latestData.app || "";
 
+
+    // Actual playback status controls the site
     if (latestData.playing === true) {
+
         statusElement.textContent =
             "🟢 Listening now";
 
         statusElement.style.color =
             "#4ade80";
+
     } else {
+
         statusElement.textContent =
-            getLastSeen(latestData.lastUpdated);
+            getLastSeen(
+                latestData.lastUpdated
+            );
 
         statusElement.style.color =
             "#999";
     }
 
+
     if (
         latestData.playing === true &&
         latestData.artwork
     ) {
+
         coverImage.src =
             latestData.artwork;
+
+        coverImage.style.display =
+            "block";
+
+        musicIcon.style.display =
+            "none";
+
     } else {
-        coverImage.src =
-            "/fallback.jpg";
-    }
 
-    coverImage.style.display =
-        "block";
-
-    musicIcon.style.display =
-        "none";
-}
-
-async function fetchMusic(){
-
-    try{
-
-        const response = await fetch(
-            "https://api.whatamilistening.com/api/status"
+        coverImage.removeAttribute(
+            "src"
         );
 
-        latestData=await response.json();
+        coverImage.style.display =
+            "none";
+
+        musicIcon.style.display =
+            "block";
+    }
+}
+
+
+async function fetchMusic() {
+
+    try {
+
+        const response =
+            await fetch(
+                "https://api.whatamilistening.com/api/status",
+                {
+                    cache: "no-store"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `Server returned ${response.status}`
+            );
+        }
+
+
+        latestData =
+            await response.json();
+
 
         updatePage();
 
-    }catch(e){
+    } catch (error) {
 
-        console.log(e);
+        console.error(
+            "Could not load music status:",
+            error
+        );
 
-        statusElement.textContent=
+
+        statusElement.textContent =
             "Unable to connect";
 
-        statusElement.style.color="#999";
-
+        statusElement.style.color =
+            "#999";
     }
-
 }
 
-fetch("https://api.whatamilistening.com/api/status", {
-    cache: "no-store"
-})
 
-setInterval(fetchMusic,2000);
+// Load immediately
+fetchMusic();
 
-setInterval(updatePage,1000);
+
+// Get fresh backend data every 2 seconds
+setInterval(
+    fetchMusic,
+    2000
+);
+
+
+// Keep the "Last seen" text updating
+setInterval(
+    updatePage,
+    1000
+);
 
 </script>
 
