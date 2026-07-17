@@ -227,55 +227,48 @@ function getLastSeen(timestamp){
 
 }
 
-function updatePage(){
+function updatePage() {
+    if (!latestData) return;
 
-    if(!latestData)
-        return;
-
-    songElement.textContent=
+    songElement.textContent =
         latestData.song || "Nothing playing";
 
-    artistElement.textContent=
+    artistElement.textContent =
         latestData.artist || "";
 
-    appElement.textContent=
+    appElement.textContent =
         latestData.app || "";
 
-    if(latestData.artwork){
-
-        coverImage.src=latestData.artwork;
-
-        coverImage.style.display="block";
-
-        musicIcon.style.display="none";
-
-    }else{
-
-        coverImage.style.display="none";
-
-        musicIcon.style.display="block";
-
-    }
-
-    const updateAge=
-        Date.now()-latestData.lastUpdated;
-
-    if(latestData.playing && updateAge<ACTIVE_TIMEOUT){
-
-        statusElement.textContent=
+    if (latestData.playing === true) {
+        statusElement.textContent =
             "🟢 Listening now";
 
-        statusElement.style.color="#4ade80";
-
-    }else{
-
-        statusElement.textContent=
+        statusElement.style.color =
+            "#4ade80";
+    } else {
+        statusElement.textContent =
             getLastSeen(latestData.lastUpdated);
 
-        statusElement.style.color="#999";
-
+        statusElement.style.color =
+            "#999";
     }
 
+    if (
+        latestData.playing === true &&
+        latestData.artwork
+    ) {
+        coverImage.src =
+            latestData.artwork;
+    } else {
+        coverImage.src =
+            "/fallback.jpg";
+    }
+
+    coverImage.style.display =
+        "block";
+
+    musicIcon.style.display =
+        "none";
 }
 
 async function fetchMusic(){
