@@ -4,7 +4,10 @@ const axios = require("axios");
 
 const app = express();
 app.use(cors({
-    origin: "https://whatamilistening.com"
+    origin: [
+        "https://whatamilistening.com",
+        "https://www.whatamilistening.com"
+    ]
 }));
 const PORT = process.env.PORT || 3000;
 
