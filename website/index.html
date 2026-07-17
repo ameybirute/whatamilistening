@@ -251,21 +251,16 @@ function updatePage() {
         return;
     }
 
-
-    songElement.textContent =
-        latestData.song || "Nothing playing";
-
-
-    artistElement.textContent =
-        latestData.artist || "";
-
-
-    appElement.textContent =
-        latestData.app || "";
-
-
-    // Actual playback status controls the site
     if (latestData.playing === true) {
+
+        songElement.textContent =
+            latestData.song || "Nothing playing";
+
+        artistElement.textContent =
+            latestData.artist || "";
+
+        appElement.textContent =
+            latestData.app || "";
 
         statusElement.textContent =
             "🟢 Listening now";
@@ -273,37 +268,37 @@ function updatePage() {
         statusElement.style.color =
             "#4ade80";
 
+        if (latestData.artwork) {
+
+            coverImage.src =
+                latestData.artwork;
+
+            coverImage.style.display =
+                "block";
+
+            musicIcon.style.display =
+                "none";
+
+        } else {
+
+            coverImage.style.display =
+                "none";
+
+            musicIcon.style.display =
+                "block";
+        }
+
     } else {
 
+        songElement.textContent = "";
+        artistElement.textContent = "";
+        appElement.textContent = "";
+
         statusElement.textContent =
-            getLastSeen(
-                latestData.lastUpdated
-            );
+            getLastSeen(latestData.lastUpdated);
 
         statusElement.style.color =
             "#999";
-    }
-
-
-    if (
-        latestData.playing === true &&
-        latestData.artwork
-    ) {
-
-        coverImage.src =
-            latestData.artwork;
-
-        coverImage.style.display =
-            "block";
-
-        musicIcon.style.display =
-            "none";
-
-    } else {
-
-        coverImage.removeAttribute(
-            "src"
-        );
 
         coverImage.style.display =
             "none";
