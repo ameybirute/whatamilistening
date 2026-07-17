@@ -18,20 +18,30 @@ class MusicActionReceiver : BroadcastReceiver() {
             return
         }
 
+        val currentlyEnabled =
+            MusicState.sharingEnabled.value
+
         val newState =
-            !MusicState.sharingEnabled.value
+            !currentlyEnabled
+
+        val listener =
+            MusicNotificationListener.instance
+
+        // If we're pausing sharing,
+        // tell the backend we're no longer live first.
+        if (!newState) {
+            listener?.pauseSharingNow()
+        }
 
         MusicState.setSharingEnabled(
             newState
         )
 
-        val listener =
-            MusicNotificationListener.instance
-
+        // If we're resuming, immediately publish current state.
         if (newState) {
             listener?.resumeSharingNow()
-        } else {
-            listener?.updateSharingNotification()
         }
+
+        listener?.updateSharingNotification()
     }
 }

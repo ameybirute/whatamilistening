@@ -192,16 +192,26 @@ fun MusicScreen() {
 
                         val newState = !sharingEnabled
 
-                        MusicState.setSharingEnabled(newState)
-
-                        if (newState) {
+                        val listener =
                             MusicNotificationListener.instance
-                                ?.resumeSharingNow()
+
+                        // If pausing sharing, send playing=false
+                        // to the backend BEFORE disabling sharing
+                        if (!newState) {
+                            listener?.pauseSharingNow()
                         }
 
-                        MusicNotificationListener.instance
-                            ?.updateSharingNotification()
+                        // Update sharing state
+                        MusicState.setSharingEnabled(newState)
 
+                        // If resuming, immediately send
+                        // the current music state to the backend
+                        if (newState) {
+                            listener?.resumeSharingNow()
+                        }
+
+                        // Update the persistent notification
+                        listener?.updateSharingNotification()
                     },
 
                     colors = ButtonDefaults.buttonColors(

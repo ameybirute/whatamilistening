@@ -655,6 +655,29 @@ class MusicNotificationListener : NotificationListenerService() {
         )
     }
 
+    fun pauseSharingNow() {
+
+        val title =
+            currentTitle ?: return
+
+        val artist =
+            currentArtist ?: return
+
+        val app =
+            currentAppName ?: return
+
+        MusicApi.send(
+            song = title,
+            artist = artist,
+            app = app,
+            playing = false
+        )
+
+        handler.removeCallbacks(
+            periodicUpdate
+        )
+    }
+
 
     override fun onDestroy() {
 

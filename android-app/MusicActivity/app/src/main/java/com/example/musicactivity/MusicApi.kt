@@ -10,10 +10,10 @@ object MusicApi {
     private val client = OkHttpClient()
 
     private const val URL =
-        "https://whatamilistening.com/api/update"
+        "https://api.whatamilistening.com/api/update"
 
     private const val STATUS_URL =
-        "https://whatamilistening.com/api/status"
+        "https://api.whatamilistening.com/api/status"
 
     fun fetchStatus() {
 
