@@ -7,7 +7,6 @@
 <title>What Am I Listening?</title>
 
 <style>
-
 *{
     margin:0;
     padding:0;
@@ -105,8 +104,9 @@ main{
     display:flex;
     align-items:center;
     justify-content:center;
-    gap:8px;
+    gap:9px;
     font-weight:bold;
+    color:#4ade80;
 }
 
 .status-dot{
@@ -117,8 +117,39 @@ main{
     flex-shrink:0;
 }
 
-@media(max-width:600px){
+.status.live .status-dot{
+    animation:dotPulse 1.8s ease-in-out infinite;
+}
 
+.status.live #statusText{
+    animation:textGlow 2.2s ease-in-out infinite;
+}
+
+@keyframes dotPulse{
+    0%{
+        box-shadow:0 0 0 0 rgba(74,222,128,0.7);
+    }
+
+    50%{
+        box-shadow:0 0 0 7px rgba(74,222,128,0);
+    }
+
+    100%{
+        box-shadow:0 0 0 0 rgba(74,222,128,0);
+    }
+}
+
+@keyframes textGlow{
+    0%,100%{
+        text-shadow:0 0 0 rgba(74,222,128,0);
+    }
+
+    50%{
+        text-shadow:0 0 8px rgba(74,222,128,0.45);
+    }
+}
+
+@media(max-width:600px){
     header{
         position:absolute;
         top:0;
@@ -158,7 +189,6 @@ main{
         font-size:16px;
     }
 }
-
 </style>
 </head>
 
@@ -172,7 +202,6 @@ main{
 </header>
 
 <main>
-
 <div class="card">
 
     <div class="cover">
@@ -194,11 +223,9 @@ main{
     </div>
 
 </div>
-
 </main>
 
 <script>
-
 const songElement =
     document.getElementById("song");
 
@@ -223,17 +250,15 @@ const coverImage =
 const musicIcon =
     document.getElementById("musicIcon");
 
-
 let latestData = null;
 
+function updatePage(){
 
-function updatePage() {
-
-    if (!latestData) {
+    if(!latestData){
         return;
     }
 
-    if (latestData.playing === true) {
+    if(latestData.playing === true){
 
         songElement.textContent =
             fixCapitalization(
@@ -257,7 +282,11 @@ function updatePage() {
         statusDot.style.display =
             "block";
 
-        if (latestData.artwork) {
+        statusElement.classList.add(
+            "live"
+        );
+
+        if(latestData.artwork){
 
             coverImage.src =
                 latestData.artwork;
@@ -268,7 +297,11 @@ function updatePage() {
             musicIcon.style.display =
                 "none";
 
-        } else {
+        }else{
+
+            coverImage.removeAttribute(
+                "src"
+            );
 
             coverImage.style.display =
                 "none";
@@ -277,7 +310,7 @@ function updatePage() {
                 "block";
         }
 
-    } else {
+    }else{
 
         songElement.textContent = "";
         artistElement.textContent = "";
@@ -294,6 +327,14 @@ function updatePage() {
         statusDot.style.display =
             "none";
 
+        statusElement.classList.remove(
+            "live"
+        );
+
+        coverImage.removeAttribute(
+            "src"
+        );
+
         coverImage.style.display =
             "none";
 
@@ -302,10 +343,9 @@ function updatePage() {
     }
 }
 
+function getLastSeen(timestamp){
 
-function getLastSeen(timestamp) {
-
-    if (!timestamp) {
+    if(!timestamp){
         return "Offline";
     }
 
@@ -321,38 +361,36 @@ function getLastSeen(timestamp) {
     const days =
         Math.floor(hours / 24);
 
-
-    if (minutes < 1) {
+    if(minutes < 1){
         return "Last seen less than a minute ago";
     }
 
-    if (minutes === 1) {
+    if(minutes === 1){
         return "Last seen 1 minute ago";
     }
 
-    if (minutes < 60) {
+    if(minutes < 60){
         return `Last seen ${minutes} minutes ago`;
     }
 
-    if (hours === 1) {
+    if(hours === 1){
         return "Last seen 1 hour ago";
     }
 
-    if (hours < 24) {
+    if(hours < 24){
         return `Last seen ${hours} hours ago`;
     }
 
-    if (days === 1) {
+    if(days === 1){
         return "Last seen yesterday";
     }
 
     return `Last seen ${days} days ago`;
 }
 
+function fixCapitalization(text){
 
-function fixCapitalization(text) {
-
-    if (!text) return "";
+    if(!text) return "";
 
     const exceptions = new Set([
         "BTS",
@@ -376,22 +414,24 @@ function fixCapitalization(text) {
         .map(word => {
 
             const cleanWord =
-                word.replace(/[^A-Za-z0-9&$/.+-]/g, "");
+                word.replace(
+                    /[^A-Za-z0-9&$/.+-]/g,
+                    ""
+                );
 
-            if (
+            if(
                 exceptions.has(
                     cleanWord.toUpperCase()
                 )
-            ) {
+            ){
                 return word;
             }
 
-            if (
+            if(
                 cleanWord.length > 1 &&
                 cleanWord === cleanWord.toUpperCase() &&
                 /[A-Z]/.test(cleanWord)
-            ) {
-
+            ){
                 const formatted =
                     cleanWord.charAt(0).toUpperCase() +
                     cleanWord.slice(1).toLowerCase();
@@ -407,10 +447,9 @@ function fixCapitalization(text) {
         .join(" ");
 }
 
+async function fetchMusic(){
 
-async function fetchMusic() {
-
-    try {
+    try{
 
         const response =
             await fetch(
@@ -420,8 +459,7 @@ async function fetchMusic() {
                 }
             );
 
-        if (!response.ok) {
-
+        if(!response.ok){
             throw new Error(
                 `Server returned ${response.status}`
             );
@@ -432,7 +470,7 @@ async function fetchMusic() {
 
         updatePage();
 
-    } catch (error) {
+    }catch(error){
 
         console.error(
             "Could not load music status:",
@@ -447,9 +485,12 @@ async function fetchMusic() {
 
         statusDot.style.display =
             "none";
+
+        statusElement.classList.remove(
+            "live"
+        );
     }
 }
-
 
 fetchMusic();
 
@@ -462,7 +503,6 @@ setInterval(
     updatePage,
     1000
 );
-
 </script>
 
 </body>
