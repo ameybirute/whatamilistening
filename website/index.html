@@ -23,8 +23,8 @@
     --pill:#333;
     --offline:#999;
     --accent:#4ade80;
-    --button-bg:#252525;
-    --button-border:#3a3a3a;
+    --toggle-bg:#2b2b2b;
+    --toggle-thumb:#fff;
 }
 
 body.light{
@@ -35,8 +35,8 @@ body.light{
     --secondary:#666;
     --pill:#e5e5e5;
     --offline:#777;
-    --button-bg:#fff;
-    --button-border:#ddd;
+    --toggle-bg:#dcdcdc;
+    --toggle-thumb:#fff;
 }
 
 body{
@@ -46,8 +46,8 @@ body{
     display:flex;
     flex-direction:column;
     transition:
-        background 0.25s ease,
-        color 0.25s ease;
+        background-color 1s ease,
+        color 1s ease;
 }
 
 header{
@@ -68,26 +68,40 @@ header span{
     position:fixed;
     top:18px;
     right:20px;
-    z-index:100;
-    width:42px;
-    height:42px;
-    border-radius:50%;
-    border:1px solid var(--button-border);
-    background:var(--button-bg);
-    color:var(--text);
+    width:40px;
+    height:22px;
+    border:none;
+    border-radius:999px;
+    background:var(--toggle-bg);
     cursor:pointer;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:18px;
-    transition:
-        background 0.25s ease,
-        color 0.25s ease,
-        transform 0.2s ease;
+    padding:2px;
+    z-index:100;
+    transition:background-color 1s ease;
 }
 
-.theme-toggle:hover{
-    transform:scale(1.05);
+.theme-toggle-thumb{
+    width:18px;
+    height:18px;
+    border-radius:50%;
+    background:var(--toggle-thumb);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transform:translateX(0);
+    transition:
+        transform 0.6s ease,
+        background-color 1s ease;
+    box-shadow:0 1px 4px rgba(0,0,0,0.25);
+}
+
+body.light .theme-toggle-thumb{
+    transform:translateX(18px);
+}
+
+.theme-toggle-thumb img{
+    width:12px;
+    height:12px;
+    object-fit:contain;
 }
 
 main{
@@ -105,7 +119,7 @@ main{
     border-radius:15px;
     padding:30px;
     text-align:center;
-    transition:background 0.25s ease;
+    transition:background-color 1s ease;
 }
 
 .cover{
@@ -119,7 +133,7 @@ main{
     display:flex;
     justify-content:center;
     align-items:center;
-    transition:background 0.25s ease;
+    transition:background-color 1s ease;
 }
 
 .cover img{
@@ -145,6 +159,7 @@ main{
     font-size:18px;
     margin-bottom:20px;
     overflow-wrap:anywhere;
+    transition:color 1s ease;
 }
 
 .app{
@@ -154,7 +169,7 @@ main{
     border-radius:20px;
     font-size:14px;
     margin-bottom:25px;
-    transition:background 0.25s ease;
+    transition:background-color 1s ease;
 }
 
 .status{
@@ -210,9 +225,6 @@ main{
     .theme-toggle{
         top:16px;
         right:16px;
-        width:38px;
-        height:38px;
-        font-size:16px;
     }
 
     main{
@@ -250,7 +262,9 @@ main{
     id="themeToggle"
     aria-label="Toggle light and dark mode"
 >
-    ☀️
+    <div class="theme-toggle-thumb">
+        <img id="themeIcon" alt="">
+    </div>
 </button>
 
 <header>
@@ -312,6 +326,15 @@ const musicIcon =
 const themeToggle =
     document.getElementById("themeToggle");
 
+const themeIcon =
+    document.getElementById("themeIcon");
+
+const moonIcon =
+    "https://img.icons8.com/fluency-systems-regular/48/1A1A1A/bright-moon.png";
+
+const sunIcon =
+    "https://img.icons8.com/fluency-systems-regular/48/1A1A1A/sun--v1.png";
+
 let latestData = null;
 
 function applyTheme(theme){
@@ -322,8 +345,8 @@ function applyTheme(theme){
             "light"
         );
 
-        themeToggle.textContent =
-            "🌙";
+        themeIcon.src =
+            sunIcon;
 
     }else{
 
@@ -331,8 +354,8 @@ function applyTheme(theme){
             "light"
         );
 
-        themeToggle.textContent =
-            "☀️";
+        themeIcon.src =
+            moonIcon;
     }
 }
 
