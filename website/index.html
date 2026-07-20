@@ -152,10 +152,16 @@ main{
     width:100%;
     height:100%;
     object-fit:cover;
+}
+
+#coverImage{
     display:none;
 }
 
-.cover.offline img{
+#offlineImage{
+    display:none;
+    width:100%;
+    height:100%;
     object-fit:contain;
 }
 
@@ -298,6 +304,7 @@ main{
 
     <div class="cover" id="cover">
         <img id="coverImage" alt="">
+        <img id="offlineImage" src="offline.gif" alt="">
         <span id="musicIcon">🎵</span>
     </div>
 
@@ -341,6 +348,9 @@ const cover =
 const coverImage =
     document.getElementById("coverImage");
 
+const offlineImage =
+    document.getElementById("offlineImage");
+
 const musicIcon =
     document.getElementById("musicIcon");
 
@@ -355,35 +365,6 @@ const moonIcon =
 
 const sunIcon =
     "https://img.icons8.com/fluency-systems-regular/48/1A1A1A/sun--v1.png";
-
-const offlineGif =
-    "offline.gif";
-
-    let gifRetryCount = 0;
-
-coverImage.onerror = function() {
-
-    if (
-        coverImage.getAttribute("src") === offlineGif &&
-        gifRetryCount < 3
-    ) {
-
-        gifRetryCount++;
-
-        setTimeout(() => {
-
-            coverImage.src =
-                offlineGif +
-                "?retry=" +
-                Date.now();
-
-        }, 1500);
-    }
-};
-
-coverImage.onload = function() {
-    gifRetryCount = 0;
-};
 
 let latestData = null;
 let presenceData = null;
@@ -498,6 +479,9 @@ function updatePage(){
             "live"
         );
 
+        offlineImage.style.display =
+            "none";
+
         if(latestData.artwork){
 
             if(
@@ -515,10 +499,6 @@ function updatePage(){
                 "none";
 
         }else{
-
-            coverImage.removeAttribute(
-                "src"
-            );
 
             coverImage.style.display =
                 "none";
@@ -561,14 +541,14 @@ function updatePage(){
             "live"
         );
 
-       if (
-            coverImage.getAttribute("src") !== offlineGif
-        ) {
-            coverImage.src = offlineGif;
-        }
+        coverImage.style.display =
+            "none";
 
-        coverImage.style.display = "block";
-        musicIcon.style.display = "none";
+        offlineImage.style.display =
+            "block";
+
+        musicIcon.style.display =
+            "none";
     }
 }
 
