@@ -474,8 +474,13 @@ function updatePage(){
 
         if(latestData.artwork){
 
-            coverImage.src =
-                latestData.artwork;
+            if(
+                coverImage.getAttribute("src") !==
+                latestData.artwork
+            ){
+                coverImage.src =
+                    latestData.artwork;
+            }
 
             coverImage.style.display =
                 "block";
@@ -530,8 +535,13 @@ function updatePage(){
             "live"
         );
 
-        coverImage.src =
-            offlineGif;
+        if(
+            coverImage.getAttribute("src") !==
+            offlineGif
+        ){
+            coverImage.src =
+                offlineGif;
+        }
 
         coverImage.style.display =
             "block";
