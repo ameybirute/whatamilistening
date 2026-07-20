@@ -541,13 +541,6 @@ function updatePage(){
             coverImage.src = offlineGif;
         }
 
-        coverImage.onerror = function () {
-            setTimeout(() => {
-                coverImage.src =
-                    offlineGif + "?retry=" + Date.now();
-            }, 1000);
-        };
-
         coverImage.style.display = "block";
         musicIcon.style.display = "none";
     }
