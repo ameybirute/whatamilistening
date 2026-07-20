@@ -85,7 +85,7 @@ header span{
     display:flex;
     align-items:center;
     justify-content:center;
-    transform:translateX(0);
+    transform:translateX(18px);
     transition:
         transform 0.6s ease,
         background-color 1s ease;
@@ -93,7 +93,7 @@ header span{
 }
 
 body.light .theme-toggle-thumb{
-    transform:translateX(18px);
+    transform:translateX(0);
 }
 
 .theme-toggle-thumb img{
@@ -192,21 +192,15 @@ main{
 
 @keyframes dotPulse{
     0%{
-        box-shadow:
-            0 0 0 0
-            rgba(74,222,128,0.7);
+        box-shadow:0 0 0 0 rgba(74,222,128,0.7);
     }
 
     50%{
-        box-shadow:
-            0 0 0 7px
-            rgba(74,222,128,0);
+        box-shadow:0 0 0 7px rgba(74,222,128,0);
     }
 
     100%{
-        box-shadow:
-            0 0 0 0
-            rgba(74,222,128,0);
+        box-shadow:0 0 0 0 rgba(74,222,128,0);
     }
 }
 
@@ -278,43 +272,17 @@ main{
 <div class="card">
 
     <div class="cover">
-        <img
-            id="coverImage"
-            alt="Album artwork"
-        >
-
-        <span id="musicIcon">
-            🎵
-        </span>
+        <img id="coverImage" alt="Album artwork">
+        <span id="musicIcon">🎵</span>
     </div>
 
-    <div
-        class="song"
-        id="song"
-    ></div>
+    <div class="song" id="song"></div>
+    <div class="artist" id="artist"></div>
+    <div class="app" id="app"></div>
 
-    <div
-        class="artist"
-        id="artist"
-    ></div>
-
-    <div
-        class="app"
-        id="app"
-    ></div>
-
-    <div
-        class="status"
-        id="status"
-    >
-        <span
-            class="status-dot"
-            id="statusDot"
-        ></span>
-
-        <span id="statusText">
-            Checking status...
-        </span>
+    <div class="status" id="status">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">Checking status...</span>
     </div>
 
 </div>
@@ -351,28 +319,18 @@ const themeToggle =
 const themeIcon =
     document.getElementById("themeIcon");
 
-
 const moonIcon =
     "https://img.icons8.com/fluency-systems-regular/48/1A1A1A/bright-moon.png";
 
 const sunIcon =
     "https://img.icons8.com/fluency-systems-regular/48/1A1A1A/sun--v1.png";
 
+let latestData = null;
+let presenceData = null;
 
-let latestData =
-    null;
+function applyTheme(theme){
 
-let presenceData =
-    null;
-
-
-function applyTheme(
-    theme
-){
-
-    if(
-        theme === "light"
-    ){
+    if(theme === "light"){
 
         document.body.classList.add(
             "light"
@@ -392,42 +350,33 @@ function applyTheme(
     }
 }
 
-
 const savedTheme =
     localStorage.getItem(
         "theme"
     ) || "dark";
 
-
 applyTheme(
     savedTheme
 );
 
-
 themeToggle.addEventListener(
     "click",
-
     function(){
 
         const isLight =
-            document.body
-                .classList
-                .contains(
-                    "light"
-                );
-
+            document.body.classList.contains(
+                "light"
+            );
 
         const newTheme =
             isLight
                 ? "dark"
                 : "light";
 
-
         localStorage.setItem(
             "theme",
             newTheme
         );
-
 
         applyTheme(
             newTheme
@@ -435,19 +384,13 @@ themeToggle.addEventListener(
     }
 );
 
-
 function updatePage(){
 
-    if(
-        !latestData
-    ){
+    if(!latestData){
         return;
     }
 
-
-    if(
-        latestData.playing === true
-    ){
+    if(latestData.playing === true){
 
         songElement.textContent =
             fixCapitalization(
@@ -455,47 +398,36 @@ function updatePage(){
                 "Nothing playing"
             );
 
-
         artistElement.textContent =
             fixCapitalization(
                 latestData.artist ||
                 ""
             );
 
-
         appElement.textContent =
             latestData.app ||
             "";
 
-
         statusText.textContent =
             "Listening now";
-
 
         statusElement.style.color =
             "#4ade80";
 
-
         statusDot.style.display =
             "block";
-
 
         statusElement.classList.add(
             "live"
         );
 
-
-        if(
-            latestData.artwork
-        ){
+        if(latestData.artwork){
 
             coverImage.src =
                 latestData.artwork;
 
-
             coverImage.style.display =
                 "block";
-
 
             musicIcon.style.display =
                 "none";
@@ -505,152 +437,89 @@ function updatePage(){
             coverImage.style.display =
                 "none";
 
-
             musicIcon.style.display =
                 "block";
         }
 
     }else{
 
-        songElement.textContent =
-            "";
-
-
-        artistElement.textContent =
-            "";
-
-
-        appElement.textContent =
-            "";
-
+        songElement.textContent = "";
+        artistElement.textContent = "";
+        appElement.textContent = "";
 
         statusText.textContent =
-            getLastSeen(
+            getLastActivity(
                 latestData.lastUpdated
             );
-
 
         statusElement.style.color =
             "#999";
 
-
         statusDot.style.display =
             "none";
-
 
         statusElement.classList.remove(
             "live"
         );
 
-
         coverImage.style.display =
             "none";
-
 
         musicIcon.style.display =
             "block";
     }
 }
 
+function getLastActivity(timestamp){
 
-function getLastSeen(
-    timestamp
-){
-
-    if(
-        !timestamp
-    ){
-
-        return "Offline";
+    if(!timestamp){
+        return "No recent activity";
     }
-
 
     const diff =
-        Date.now() -
-        Number(timestamp);
-
+        Date.now() - Number(timestamp);
 
     const minutes =
-        Math.floor(
-            diff / 60000
-        );
-
+        Math.floor(diff / 60000);
 
     const hours =
-        Math.floor(
-            minutes / 60
-        );
-
+        Math.floor(minutes / 60);
 
     const days =
-        Math.floor(
-            hours / 24
-        );
+        Math.floor(hours / 24);
 
-
-    if(
-        minutes < 1
-    ){
-
-        return "Last seen less than a minute ago";
+    if(minutes < 1){
+        return "Last activity less than a minute ago";
     }
 
-
-    if(
-        minutes === 1
-    ){
-
-        return "Last seen 1 minute ago";
+    if(minutes === 1){
+        return "Last activity 1 minute ago";
     }
 
-
-    if(
-        minutes < 60
-    ){
-
-        return `Last seen ${minutes} minutes ago`;
+    if(minutes < 60){
+        return `Last activity ${minutes} minutes ago`;
     }
 
-
-    if(
-        hours === 1
-    ){
-
-        return "Last seen 1 hour ago";
+    if(hours === 1){
+        return "Last activity 1 hour ago";
     }
 
-
-    if(
-        hours < 24
-    ){
-
-        return `Last seen ${hours} hours ago`;
+    if(hours < 24){
+        return `Last activity ${hours} hours ago`;
     }
 
-
-    if(
-        days === 1
-    ){
-
-        return "Last seen yesterday";
+    if(days === 1){
+        return "Last activity yesterday";
     }
 
-
-    return `Last seen ${days} days ago`;
+    return `Last activity ${days} days ago`;
 }
 
+function fixCapitalization(text){
 
-function fixCapitalization(
-    text
-){
-
-    if(
-        !text
-    ){
-
+    if(!text){
         return "";
     }
-
 
     const exceptions =
         new Set([
@@ -670,7 +539,6 @@ function fixCapitalization(
             "PCRC"
         ]);
 
-
     return text
         .split(" ")
         .map(
@@ -682,40 +550,23 @@ function fixCapitalization(
                         ""
                     );
 
-
                 if(
                     exceptions.has(
                         cleanWord.toUpperCase()
                     )
                 ){
-
                     return word;
                 }
 
-
                 if(
                     cleanWord.length > 1 &&
-
-                    cleanWord ===
-                    cleanWord.toUpperCase() &&
-
-                    /[A-Z]/.test(
-                        cleanWord
-                    )
+                    cleanWord === cleanWord.toUpperCase() &&
+                    /[A-Z]/.test(cleanWord)
                 ){
 
                     const formatted =
-
-                        cleanWord
-                            .charAt(0)
-                            .toUpperCase()
-
-                        +
-
-                        cleanWord
-                            .slice(1)
-                            .toLowerCase();
-
+                        cleanWord.charAt(0).toUpperCase() +
+                        cleanWord.slice(1).toLowerCase();
 
                     return word.replace(
                         cleanWord,
@@ -723,13 +574,11 @@ function fixCapitalization(
                     );
                 }
 
-
                 return word;
             }
         )
         .join(" ");
 }
-
 
 async function fetchPresence(){
 
@@ -743,23 +592,17 @@ async function fetchPresence(){
                 }
             );
 
-
-        if(
-            !response.ok
-        ){
+        if(!response.ok){
 
             throw new Error(
                 `Presence returned ${response.status}`
             );
         }
 
-
         presenceData =
             await response.json();
 
-
         return presenceData;
-
 
     }catch(error){
 
@@ -768,22 +611,14 @@ async function fetchPresence(){
             error
         );
 
-
         return null;
     }
 }
-
 
 async function fetchMusic(){
 
     const presence =
         await fetchPresence();
-
-
-    /*
-    If Cloudflare knows you're offline,
-    don't contact Render at all.
-    */
 
     if(
         presence &&
@@ -792,53 +627,36 @@ async function fetchMusic(){
 
         latestData = {
             playing:false,
-
             lastUpdated:
                 presence.lastSeen
         };
 
-
         updatePage();
-
 
         return;
     }
-
-
-    /*
-    Only contact Render when Cloudflare
-    says you're currently listening.
-    */
 
     try{
 
         const response =
             await fetch(
-
                 "https://api.whatamilistening.com/api/status",
-
                 {
                     cache:"no-store"
                 }
             );
 
-
-        if(
-            !response.ok
-        ){
+        if(!response.ok){
 
             throw new Error(
                 `Server returned ${response.status}`
             );
         }
 
-
         latestData =
             await response.json();
 
-
         updatePage();
-
 
     }catch(error){
 
@@ -847,18 +665,14 @@ async function fetchMusic(){
             error
         );
 
-
         statusText.textContent =
             "Loading current music...";
-
 
         statusElement.style.color =
             "#999";
 
-
         statusDot.style.display =
             "none";
-
 
         statusElement.classList.remove(
             "live"
@@ -866,15 +680,12 @@ async function fetchMusic(){
     }
 }
 
-
 fetchMusic();
-
 
 setInterval(
     fetchMusic,
     5000
 );
-
 
 setInterval(
     updatePage,
