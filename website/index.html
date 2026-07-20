@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<link rel="preload" href="offline.gif" as="image">
 <title>What Am I Listening?</title>
 
 <style>
@@ -159,7 +159,8 @@ main{
 }
 
 #offlineImage{
-    display:none;
+    visibility:hidden;
+    position:absolute;
     width:100%;
     height:100%;
     object-fit:contain;
