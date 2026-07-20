@@ -116,6 +116,13 @@ main{
     transition:background-color 1s ease;
 }
 
+.card.offline{
+    max-width:none;
+    background:transparent;
+    border-radius:0;
+    padding:0;
+}
+
 .cover{
     width:180px;
     height:180px;
@@ -131,9 +138,14 @@ main{
 }
 
 .cover.offline{
+    width:540px;
+    height:540px;
+    max-width:85vw;
+    max-height:60vh;
     background:transparent;
     border-radius:0;
     overflow:visible;
+    margin-bottom:10px;
 }
 
 .cover img{
@@ -240,6 +252,13 @@ main{
         height:140px;
     }
 
+    .cover.offline{
+        width:420px;
+        height:420px;
+        max-width:90vw;
+        max-height:55vh;
+    }
+
     .cover span{
         font-size:55px;
     }
@@ -275,7 +294,7 @@ main{
 </header>
 
 <main>
-<div class="card">
+<div class="card" id="card">
 
     <div class="cover" id="cover">
         <img id="coverImage" alt="Music artwork">
@@ -295,6 +314,9 @@ main{
 </main>
 
 <script>
+const card =
+    document.getElementById("card");
+
 const songElement =
     document.getElementById("song");
 
@@ -404,9 +426,22 @@ function updatePage(){
 
     if(latestData.playing === true){
 
+        card.classList.remove(
+            "offline"
+        );
+
         cover.classList.remove(
             "offline"
         );
+
+        songElement.style.display =
+            "block";
+
+        artistElement.style.display =
+            "block";
+
+        appElement.style.display =
+            "inline-block";
 
         songElement.textContent =
             fixCapitalization(
@@ -463,9 +498,22 @@ function updatePage(){
 
     }else{
 
-        songElement.textContent = "";
-        artistElement.textContent = "";
-        appElement.textContent = "";
+        card.classList.add(
+            "offline"
+        );
+
+        cover.classList.add(
+            "offline"
+        );
+
+        songElement.style.display =
+            "none";
+
+        artistElement.style.display =
+            "none";
+
+        appElement.style.display =
+            "none";
 
         statusText.textContent =
             getLastActivity(
@@ -480,10 +528,6 @@ function updatePage(){
 
         statusElement.classList.remove(
             "live"
-        );
-
-        cover.classList.add(
-            "offline"
         );
 
         coverImage.src =
