@@ -297,7 +297,7 @@ main{
 <div class="card" id="card">
 
     <div class="cover" id="cover">
-        <img id="coverImage" alt="Music artwork">
+        <img id="coverImage" alt="">
         <span id="musicIcon">🎵</span>
     </div>
 
@@ -535,19 +535,21 @@ function updatePage(){
             "live"
         );
 
-        if(
-            coverImage.getAttribute("src") !==
-            offlineGif
-        ){
-            coverImage.src =
-                offlineGif;
+       if (
+            coverImage.getAttribute("src") !== offlineGif
+        ) {
+            coverImage.src = offlineGif;
         }
 
-        coverImage.style.display =
-            "block";
+        coverImage.onerror = function () {
+            setTimeout(() => {
+                coverImage.src =
+                    offlineGif + "?retry=" + Date.now();
+            }, 1000);
+        };
 
-        musicIcon.style.display =
-            "none";
+        coverImage.style.display = "block";
+        musicIcon.style.display = "none";
     }
 }
 
