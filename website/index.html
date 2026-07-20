@@ -359,6 +359,32 @@ const sunIcon =
 const offlineGif =
     "offline.gif";
 
+    let gifRetryCount = 0;
+
+coverImage.onerror = function() {
+
+    if (
+        coverImage.getAttribute("src") === offlineGif &&
+        gifRetryCount < 3
+    ) {
+
+        gifRetryCount++;
+
+        setTimeout(() => {
+
+            coverImage.src =
+                offlineGif +
+                "?retry=" +
+                Date.now();
+
+        }, 1500);
+    }
+};
+
+coverImage.onload = function() {
+    gifRetryCount = 0;
+};
+
 let latestData = null;
 let presenceData = null;
 
